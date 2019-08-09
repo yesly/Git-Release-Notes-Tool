@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+
+import org.apache.log4j.BasicConfigurator;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
@@ -25,9 +29,17 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 public class GetGitCommits {
 	private final String pathToRepo;
+	private final String reportName;
+	private final boolean gitSubModules;
+	private final boolean byModules;
 
-	public GetGitCommits(final String pathToRepo) {
+	public GetGitCommits(final String pathToRepo, final String reportName, final boolean gitSubModules, final boolean byModules)
+			throws IOException, GitAPIException {
 		this.pathToRepo = pathToRepo;
+		this.reportName = reportName;
+		this.gitSubModules = gitSubModules;
+		this.byModules = byModules;
+		buildReport();
 	}
 
 	/**
@@ -37,18 +49,20 @@ public class GetGitCommits {
 	 * @throws GitAPIException
 	 */
 	public void buildReport() throws IOException, GitAPIException {
-		final PrintWriter writer = new PrintWriter("commits-report.txt", "UTF-8");
+		BasicConfigurator.configure();
+		final PrintWriter writer = new PrintWriter(reportName + ".txt", "UTF-8");
 		writer.println("Commits Since Last Tagged Commit:");
 
-		// Get commits for original repository.
 		Repository repo = new FileRepository(pathToRepo + ".git");
-		writer.println(getCommits(writer, repo, null).toString());
+		writer.println(getCommits(writer, repo, null).toString(byModules));
 
-		// Get commits for Git sub modules.
-		final SubmoduleWalk walk = SubmoduleWalk.forIndex(repo);
-		while (walk.next()) {
-			repo = walk.getRepository();
-			writer.println(getCommits(writer, repo, walk).toString());
+		if (gitSubModules) {
+			final SubmoduleWalk walk = SubmoduleWalk.forIndex(repo);
+			while (walk.next()) {
+				repo = walk.getRepository();
+				writer.println(getCommits(writer, repo, walk).toString(byModules));
+
+			}
 		}
 
 		writer.close();
@@ -180,19 +194,34 @@ class Commit {
 	String message;
 	String author;
 	Date date;
-	Set<String> modifiedFiles = new HashSet<String>();
+	Set<String> modules = new HashSet<String>();
 
 	Commit(final String message, final String author, final Date date, final Set<String> modifiedFiles) {
 		this.message = message;
 		this.author = author;
 		this.date = date;
-		this.modifiedFiles.addAll(modifiedFiles);
+		this.modules.addAll(getModules(modifiedFiles));
 	}
 
-	@Override
-	public String toString() {
-		return "Author: " + this.author + " - Date: " + this.date + " - File(s): " + this.modifiedFiles + " - Message: "
-				+ this.message;
+	public String toString(final boolean byModules) {
+		String files = "";
+		if (!byModules) {
+			files = " - " + modules;
+		}
+		return "\t\t" + this.author + " - " + this.date + files + " - " + this.message;
+	}
+
+	private Set<String> getModules(final Set<String> files) {
+		final Set<String> modules = new HashSet<String>();
+		final Iterator<String> it = files.iterator();
+		while (it.hasNext()) {
+			modules.add(it.next().split("/")[0]);
+		}
+		return modules;
+	}
+
+	public Set<String> getModules() {
+		return modules;
 	}
 }
 
@@ -214,12 +243,47 @@ class Commits {
 		listCommits.add(c);
 	}
 
-	@Override
-	public String toString() {
+	public String toString(boolean byModules) {
 		String s = repoName + ":\n";
+		if (byModules) {
+			return s + toStringByModules();
+		}
+		return s + toStringNotByModule(byModules);
+	}
+
+	public String toStringNotByModule(boolean byModules) {
+		String s = "";
 		final Iterator<Commit> it = listCommits.iterator();
 		while (it.hasNext()) {
-			s = s + it.next().toString();
+			s += it.next().toString(byModules);
+		}
+		return s;
+	}
+
+	public String toStringByModules() {
+		Map<String, Commits> map = new TreeMap<String, Commits>();
+
+		final Iterator<Commit> commitsIterator = listCommits.iterator();
+		while (commitsIterator.hasNext()) {
+			Commit c = commitsIterator.next();
+
+			final Iterator<String> modulesIterator = c.getModules().iterator();
+			while (modulesIterator.hasNext()) {
+				String module = modulesIterator.next();
+				Commits com;
+				if (map.containsKey(module)) {
+					com = map.get(module);
+					com.addCommit(c);
+				} else {
+					com = new Commits(repoName);
+					com.addCommit(c);
+				}
+				map.put(module, com);
+			}
+		}
+		String s = "";
+		for (Map.Entry<String, Commits> entry : map.entrySet()) {
+			s += "\t" + entry.getKey() + ": \n" + entry.getValue().toStringNotByModule(true);
 		}
 		return s;
 	}
