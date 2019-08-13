@@ -1,4 +1,4 @@
-# get-git-commits
+# Release Notes Tool
 Description: Tool that collects the commits in a Git repository since the last tag with the intention of creating release notes for a project.
 
 Features:
