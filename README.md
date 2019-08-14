@@ -1,16 +1,8 @@
 # Git Release Notes Tool
-Description: Tool that collects the commits in a Git repository since the last tag with the intention of creating release notes for a project.
+Tool that collects the commits in a Git repository with the intention of creating release notes for a project.
 
 Features:
 
-  -Display release notes in a text file.
-  
-  -Organize commits by module.
-  
-  -Organize commits by Git submodules.
-  
-Upcoming features:
+•	Write release notes into a text file.
 
-  -Collect commits for all tags.
-  
-  -Expand the ways in which the release notes are displayed.
+•	Organize commits by modules and Git submodules.
