@@ -1,0 +1,28 @@
+All commits:
+Test:
+		yesly - 2019-08-06 - [Random-Problems, .gitmodules, test, README.md] - ggg 
+		yesly - 2019-08-06 - [test] - c5 
+		yesly - 2019-08-03 - [README.md] - c4 
+		yesly - 2019-08-03 - [README.md] - c3 
+		yesly - 2019-08-03 - [README.md] - some commit after tag2 
+		yesly - 2019-08-03 - [README.md] - some commit after tag 
+		yesly - 2019-04-26 - [test] - Merge pull request #13 from yesly/addjunit  junit added
+		yesly - 2019-04-26 - [test] - junit added 
+		yesly - 2019-04-26 - [test] - Merge pull request #12 from yesly/multiply  Multiply
+		yesly - 2019-04-26 - [test] - m 
+		yesly - 2019-04-26 - [test] - multiply function added 
+		yesly - 2019-04-26 - [test] - Merge pull request #11 from yesly/divide  divide function added
+		yesly - 2019-04-26 - [test] - Merge pull request #10 from yesly/subtract  subtract function added
+		yesly - 2019-04-26 - [test] - divide function added 
+		yesly - 2019-04-26 - [test] - subtract function added 
+		Yeikel - 2019-04-21 - [test] - Merge pull request #7 from yesly/add2  Adding add function
+		yeikel - 2019-04-21 - [test] - Adding add function 
+		yeikel - 2019-04-21 - [.gitignore] - Add ignore 
+		yesly - 2019-04-21 - [test] - Merge pull request #3 from yesly/calculator  cal
+		yesly - 2019-04-21 - [test] - cal 
+		yesly - 2019-04-21 - [test] - Merge pull request #1 from yesly/develop  test2
+		yesly - 2019-04-21 - [test] - test2 
+		yesly - 2019-04-21 - [test] - test 
+		yesly - 2019-04-21 - [] - Delete test.txt
+		yesly - 2019-04-21 - [test.txt] - first commit 
+		yesly - 2019-04-21 - [.gitignore, README.md] - Initial commit
