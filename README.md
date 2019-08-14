@@ -5,4 +5,6 @@ Features:
 
 •	Write release notes into a text file.
 
+•	Get entire commit history or commits since last tagged commit. 
+
 •	Organize commits by modules and Git submodules.
